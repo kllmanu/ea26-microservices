@@ -1,0 +1,18 @@
+services:
+  traefik:
+    image: traefik:v3.0
+    command:
+      - "--api.insecure=true" # Enables the Traefik Dashboard
+      - "--providers.docker=true" # Enables Service Discovery
+    ports:
+      - "80:80"     # Public Traffic
+      - "8080:8080" # The Traefik Dashboard UI
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+
+  user:
+    build: user
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.user.rule=Host(`user.localhost`)"
+      - "traefik.http.services.user.loadbalancer.server.port=8081"
