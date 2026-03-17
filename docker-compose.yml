@@ -1,6 +1,6 @@
 services:
   traefik:
-    image: traefik:v3.0
+    image: traefik:latest
     command:
       - "--api.insecure=true" # Enables the Traefik Dashboard
       - "--providers.docker=true" # Enables Service Discovery
@@ -14,5 +14,10 @@ services:
     build: user
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.user.rule=Host(`user.localhost`)"
+      # 1. Change the rule to match the path instead of the hostname
+      - "traefik.http.routers.user.rule=Host(`localhost`) && PathPrefix(`/user`)"
+      # 2. Add a middleware to strip the "/user" prefix before sending traffic to the app
+      - "traefik.http.middlewares.user-strip.stripprefix.prefixes=/user"
+      - "traefik.http.routers.user.middlewares=user-strip"
+      # 3. Explicitly define the internal port
       - "traefik.http.services.user.loadbalancer.server.port=8081"
