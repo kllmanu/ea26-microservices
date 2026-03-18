@@ -1,7 +1,7 @@
-package com.ecommerce.app.product.mapper;
+package com.ecommerce.product.mapper;
 
-import com.ecommerce.app.product.domain.Product;
-import com.ecommerce.app.product.dto.ProductUpdateRequestDto;
+import com.ecommerce.product.domain.Product;
+import com.ecommerce.product.dto.ProductUpdateRequestDto;
 import org.springframework.stereotype.Component;
 
 @Component

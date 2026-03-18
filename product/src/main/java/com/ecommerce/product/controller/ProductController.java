@@ -1,9 +1,9 @@
-package com.ecommerce.app.product.controller;
+package com.ecommerce.product.controller;
 
-import com.ecommerce.app.product.dto.ProductCreateRequestDto;
-import com.ecommerce.app.product.dto.ProductResponseDto;
-import com.ecommerce.app.product.dto.ProductUpdateRequestDto;
-import com.ecommerce.app.product.service.ProductService;
+import com.ecommerce.product.dto.ProductCreateRequestDto;
+import com.ecommerce.product.dto.ProductResponseDto;
+import com.ecommerce.product.dto.ProductUpdateRequestDto;
+import com.ecommerce.product.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;

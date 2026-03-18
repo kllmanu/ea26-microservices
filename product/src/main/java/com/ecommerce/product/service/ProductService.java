@@ -1,9 +1,9 @@
-package com.ecommerce.app.product.service;
+package com.ecommerce.product.service;
 
-import com.ecommerce.app.product.domain.ProductId;
-import com.ecommerce.app.product.dto.ProductCreateRequestDto;
-import com.ecommerce.app.product.dto.ProductResponseDto;
-import com.ecommerce.app.product.dto.ProductUpdateRequestDto;
+import com.ecommerce.product.domain.ProductId;
+import com.ecommerce.product.dto.ProductCreateRequestDto;
+import com.ecommerce.product.dto.ProductResponseDto;
+import com.ecommerce.product.dto.ProductUpdateRequestDto;
 
 import java.util.List;
 import java.util.Optional;

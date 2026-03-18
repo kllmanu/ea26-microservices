@@ -1,4 +1,4 @@
-package com.ecommerce.app.product.dto;
+package com.ecommerce.product.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

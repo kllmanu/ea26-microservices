@@ -1,6 +1,6 @@
-package com.ecommerce.app.product.repository;
+package com.ecommerce.product.repository;
 
-import com.ecommerce.app.product.entity.ProductEntity;
+import com.ecommerce.product.entity.ProductEntity;
 
 import java.util.List;
 import java.util.Optional;

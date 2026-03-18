@@ -1,7 +1,7 @@
-package com.ecommerce.app.product.exception;
+package com.ecommerce.product.exception;
 
-import com.ecommerce.app.common.exception.ResourceNotFoundException;
-import com.ecommerce.app.product.domain.ProductId;
+import com.ecommerce.product.exception.ResourceNotFoundException;
+import com.ecommerce.product.domain.ProductId;
 
 import java.util.UUID;
 

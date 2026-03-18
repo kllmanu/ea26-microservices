@@ -1,16 +1,16 @@
-package com.ecommerce.app.product.service;
+package com.ecommerce.product.service;
 
-import com.ecommerce.app.product.domain.Product;
-import com.ecommerce.app.product.domain.ProductId;
-import com.ecommerce.app.product.dto.ProductCreateRequestDto;
-import com.ecommerce.app.product.dto.ProductResponseDto;
-import com.ecommerce.app.product.dto.ProductUpdateRequestDto;
-import com.ecommerce.app.product.entity.ProductEntity;
-import com.ecommerce.app.product.exception.InsufficientStockException;
-import com.ecommerce.app.product.exception.ProductNotAvailableException;
-import com.ecommerce.app.product.exception.ProductNotFoundException;
-import com.ecommerce.app.product.mapper.*;
-import com.ecommerce.app.product.repository.ProductRepository;
+import com.ecommerce.product.domain.Product;
+import com.ecommerce.product.domain.ProductId;
+import com.ecommerce.product.dto.ProductCreateRequestDto;
+import com.ecommerce.product.dto.ProductResponseDto;
+import com.ecommerce.product.dto.ProductUpdateRequestDto;
+import com.ecommerce.product.entity.ProductEntity;
+import com.ecommerce.product.exception.InsufficientStockException;
+import com.ecommerce.product.exception.ProductNotAvailableException;
+import com.ecommerce.product.exception.ProductNotFoundException;
+import com.ecommerce.product.mapper.*;
+import com.ecommerce.product.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

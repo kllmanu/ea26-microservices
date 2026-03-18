@@ -1,4 +1,4 @@
-package com.ecommerce.app.product.domain;
+package com.ecommerce.product.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
