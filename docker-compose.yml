@@ -21,3 +21,14 @@ services:
       - "traefik.http.routers.user.middlewares=user-strip"
       # 3. Explicitly define the internal port
       - "traefik.http.services.user.loadbalancer.server.port=8081"
+
+  swagger:
+    image: swaggerapi/swagger-ui:latest
+    environment:
+      - SWAGGER_JSON_URL=http://localhost/user/v3/api-docs
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.swagger.rule=Host(`localhost`) && PathPrefix(`/swagger`)"
+      - "traefik.http.middlewares.swagger-strip.stripprefix.prefixes=/swagger"
+      - "traefik.http.routers.swagger.middlewares=swagger-strip"
+      - "traefik.http.services.swagger.loadbalancer.server.port=8080"
