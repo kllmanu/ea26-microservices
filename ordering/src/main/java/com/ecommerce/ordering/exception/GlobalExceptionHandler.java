@@ -1,4 +1,4 @@
-package com.ecommerce.app.exception;
+package com.ecommerce.ordering.exception;
 
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
@@ -13,9 +13,14 @@ import org.springframework.web.context.request.WebRequest;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ResourceNotFoundException.class)
+    @ExceptionHandler({
+            ResourceNotFoundException.class,
+            CartNotFoundException.class,
+            OrderNotFoundException.class,
+            ProductNotInCartException.class
+    })
     public ResponseEntity<Object> handleResourceNotFoundException(
-            ResourceNotFoundException ex, WebRequest request) {
+            Exception ex, WebRequest request) {
 
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", LocalDateTime.now());
@@ -26,9 +31,13 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(BadRequestException.class)
+    @ExceptionHandler({
+            BadRequestException.class,
+            EmptyCartException.class,
+            InvalidOrderStatusException.class
+    })
     public ResponseEntity<Object> handleBadRequestException(
-            BadRequestException ex, WebRequest request) {
+            Exception ex, WebRequest request) {
 
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", LocalDateTime.now());

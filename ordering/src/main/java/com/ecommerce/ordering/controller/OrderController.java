@@ -1,7 +1,7 @@
-package com.ecommerce.app.ordering.controller;
+package com.ecommerce.ordering.controller;
 
-import com.ecommerce.app.ordering.dto.OrderResponseDto;
-import com.ecommerce.app.ordering.service.OrderService;
+import com.ecommerce.ordering.dto.OrderResponseDto;
+import com.ecommerce.ordering.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;

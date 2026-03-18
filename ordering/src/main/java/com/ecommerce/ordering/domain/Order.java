@@ -1,6 +1,6 @@
-package com.ecommerce.app.ordering.domain;
+package com.ecommerce.ordering.domain;
 
-import com.ecommerce.app.ordering.entity.OrderEntity.OrderStatus;
+import com.ecommerce.ordering.entity.OrderEntity.OrderStatus;
 import com.ecommerce.app.user.domain.UserId;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

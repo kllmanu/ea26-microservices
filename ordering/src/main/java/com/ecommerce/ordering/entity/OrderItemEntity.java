@@ -1,4 +1,4 @@
-package com.ecommerce.app.ordering.entity;
+package com.ecommerce.ordering.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

@@ -1,4 +1,4 @@
-package com.ecommerce.app.ordering.domain;
+package com.ecommerce.ordering.domain;
 
 import com.ecommerce.app.product.domain.ProductId;
 import com.ecommerce.app.user.domain.UserId;

@@ -1,7 +1,7 @@
-package com.ecommerce.app.ordering.mapper;
+package com.ecommerce.ordering.mapper;
 
-import com.ecommerce.app.ordering.domain.Order;
-import com.ecommerce.app.ordering.dto.OrderResponseDto;
+import com.ecommerce.ordering.domain.Order;
+import com.ecommerce.ordering.dto.OrderResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

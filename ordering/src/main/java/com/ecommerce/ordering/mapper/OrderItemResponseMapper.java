@@ -1,7 +1,7 @@
-package com.ecommerce.app.ordering.mapper;
+package com.ecommerce.ordering.mapper;
 
-import com.ecommerce.app.ordering.domain.OrderItem;
-import com.ecommerce.app.ordering.dto.OrderItemResponseDto;
+import com.ecommerce.ordering.domain.OrderItem;
+import com.ecommerce.ordering.dto.OrderItemResponseDto;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -1,6 +1,6 @@
-package com.ecommerce.app.ordering.exception;
+package com.ecommerce.ordering.exception;
 
-import com.ecommerce.app.common.exception.ResourceNotFoundException;
+import com.ecommerce.ordering.exception.ResourceNotFoundException;
 
 import java.util.UUID;
 

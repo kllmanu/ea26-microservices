@@ -1,6 +1,6 @@
-package com.ecommerce.app.ordering.repository;
+package com.ecommerce.ordering.repository;
 
-import com.ecommerce.app.ordering.entity.OrderEntity;
+import com.ecommerce.ordering.entity.OrderEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;

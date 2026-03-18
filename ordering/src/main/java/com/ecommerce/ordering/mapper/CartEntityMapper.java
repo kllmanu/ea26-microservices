@@ -1,8 +1,8 @@
-package com.ecommerce.app.ordering.mapper;
+package com.ecommerce.ordering.mapper;
 
-import com.ecommerce.app.ordering.domain.Cart;
-import com.ecommerce.app.ordering.domain.CartId;
-import com.ecommerce.app.ordering.entity.CartEntity;
+import com.ecommerce.ordering.domain.Cart;
+import com.ecommerce.ordering.domain.CartId;
+import com.ecommerce.ordering.entity.CartEntity;
 import com.ecommerce.app.user.domain.UserId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

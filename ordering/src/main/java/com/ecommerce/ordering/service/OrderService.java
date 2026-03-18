@@ -1,6 +1,6 @@
-package com.ecommerce.app.ordering.service;
+package com.ecommerce.ordering.service;
 
-import com.ecommerce.app.ordering.dto.OrderResponseDto;
+import com.ecommerce.ordering.dto.OrderResponseDto;
 
 import java.util.List;
 import java.util.UUID;

@@ -1,6 +1,6 @@
-package com.ecommerce.app.ordering.repository;
+package com.ecommerce.ordering.repository;
 
-import com.ecommerce.app.ordering.entity.CartEntity;
+import com.ecommerce.ordering.entity.CartEntity;
 import com.ecommerce.app.user.entity.UserEntity;
 
 import java.util.List;

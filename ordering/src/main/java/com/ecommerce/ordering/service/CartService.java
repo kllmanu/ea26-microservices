@@ -1,7 +1,7 @@
-package com.ecommerce.app.ordering.service;
+package com.ecommerce.ordering.service;
 
-import com.ecommerce.app.ordering.dto.AddToCartRequestDto;
-import com.ecommerce.app.ordering.dto.CartResponseDto;
+import com.ecommerce.ordering.dto.AddToCartRequestDto;
+import com.ecommerce.ordering.dto.CartResponseDto;
 
 import java.util.List;
 import java.util.UUID;

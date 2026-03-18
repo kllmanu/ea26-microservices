@@ -1,6 +1,6 @@
-package com.ecommerce.app.ordering.exception;
+package com.ecommerce.ordering.exception;
 
-import com.ecommerce.app.common.exception.BadRequestException;
+import com.ecommerce.ordering.exception.BadRequestException;
 
 import java.util.UUID;
 

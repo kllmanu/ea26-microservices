@@ -1,6 +1,6 @@
-package com.ecommerce.app.ordering.repository;
+package com.ecommerce.ordering.repository;
 
-import com.ecommerce.app.ordering.entity.OrderEntity;
+import com.ecommerce.ordering.entity.OrderEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
