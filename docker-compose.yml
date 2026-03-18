@@ -22,10 +22,19 @@ services:
       # 3. Explicitly define the internal port
       - "traefik.http.services.user.loadbalancer.server.port=8081"
 
+  product:
+    build: product
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.product.rule=Host(`localhost`) && PathPrefix(`/product`)"
+      - "traefik.http.middlewares.product-strip.stripprefix.prefixes=/product"
+      - "traefik.http.routers.product.middlewares=product-strip"
+      - "traefik.http.services.product.loadbalancer.server.port=8082"
+
   swagger:
     image: swaggerapi/swagger-ui:latest
     environment:
-      - SWAGGER_JSON_URL=http://localhost/user/v3/api-docs
+      - 'URLS=[{ "url": "http://localhost/user/v3/api-docs", "name": "User Service" }, { "url": "http://localhost/product/v3/api-docs", "name": "Product Service" }]'
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.swagger.rule=Host(`localhost`) && PathPrefix(`/swagger`)"
