@@ -14,6 +14,6 @@ public interface JpaOrderRepository extends JpaRepository<OrderEntity, UUID> {
     List<OrderEntity> findByUserId(UUID userId);
     
     @Modifying
-    @Query("DELETE FROM OrderEntity o WHERE o.user.id = ?1")
+    @Query("DELETE FROM OrderEntity o WHERE o.userId = ?1")
     void deleteByUserId(UUID userId);
 }

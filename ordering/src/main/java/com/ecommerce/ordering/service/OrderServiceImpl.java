@@ -1,8 +1,14 @@
 package com.ecommerce.ordering.service;
 
+import com.ecommerce.ordering.client.ProductClient;
+import com.ecommerce.ordering.client.UserClient;
 import com.ecommerce.ordering.domain.Order;
 import com.ecommerce.ordering.domain.OrderItem;
+import com.ecommerce.ordering.domain.ProductId;
+import com.ecommerce.ordering.domain.UserId;
 import com.ecommerce.ordering.dto.OrderResponseDto;
+import com.ecommerce.ordering.dto.ProductDTO;
+import com.ecommerce.ordering.dto.UserDTO;
 import com.ecommerce.ordering.entity.CartEntity;
 import com.ecommerce.ordering.entity.OrderEntity;
 import com.ecommerce.ordering.entity.OrderItemEntity;
@@ -14,12 +20,6 @@ import com.ecommerce.ordering.mapper.OrderItemEntityMapper;
 import com.ecommerce.ordering.mapper.OrderResponseMapper;
 import com.ecommerce.ordering.repository.CartRepository;
 import com.ecommerce.ordering.repository.OrderRepository;
-import com.ecommerce.app.product.domain.ProductId;
-import com.ecommerce.app.product.service.ProductService;
-import com.ecommerce.app.user.domain.UserId;
-import com.ecommerce.app.user.entity.UserEntity;
-import com.ecommerce.app.user.exception.UserNotFoundException;
-import com.ecommerce.app.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,10 +38,10 @@ public class OrderServiceImpl implements OrderService {
     private CartRepository cartRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserClient userClient;
 
     @Autowired
-    private ProductService productService;
+    private ProductClient productClient;
 
     @Autowired
     private OrderEntityMapper orderEntityMapper;
@@ -54,8 +54,11 @@ public class OrderServiceImpl implements OrderService {
 
     @Transactional
     public OrderResponseDto placeOrder(UUID userId) {
-        UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(userId));
+        // Validate user via Feign
+        UserDTO user = userClient.getUserById(userId);
+        if (user == null) {
+            throw new RuntimeException("User not found: " + userId);
+        }
 
         CartEntity cart = cartRepository.findByUserId(userId)
                 .orElseThrow(() -> new CartNotFoundException(userId));
@@ -64,16 +67,15 @@ public class OrderServiceImpl implements OrderService {
             throw new EmptyCartException(userId);
         }
 
-        // Check availability and stock for all items
+        // Check availability and stock for all items via Feign
         cart.getItems().forEach(item -> {
-            ProductId productId = ProductId.of(item.getProductId());
-            productService.checkAvailability(productId);
-            productService.checkStock(productId, item.getQuantity());
-        });
-
-        // Reduce stock for all items
-        cart.getItems().forEach(item -> {
-            productService.reduceStock(ProductId.of(item.getProductId()), item.getQuantity());
+            ProductDTO product = productClient.getProductById(item.getProductId());
+            if (product == null || !product.getAvailable()) {
+                throw new RuntimeException("Product not available: " + item.getProductId());
+            }
+            if (product.getStock() < item.getQuantity()) {
+                throw new RuntimeException("Insufficient stock for product: " + item.getProductId());
+            }
         });
 
         // Create Order items from Cart items
@@ -90,7 +92,7 @@ public class OrderServiceImpl implements OrderService {
         // Create and Save Order
         Order orderDomain = Order.create(UserId.of(userId), orderItems);
         OrderEntity orderEntity = OrderEntity.builder()
-                .user(user)
+                .userId(userId)
                 .totalAmount(orderDomain.getTotalAmount())
                 .orderDate(orderDomain.getOrderDate())
                 .status(orderDomain.getStatus())
@@ -115,10 +117,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     public List<OrderResponseDto> getOrderHistory(UUID userId) {
-        if (!userRepository.existsById(userId)) {
-            throw new UserNotFoundException(userId);
-        }
-
+        // Optional: validate user exists via Feign if needed
         return orderRepository.findByUserId(userId).stream()
                 .map(orderEntityMapper::toDomain)
                 .map(orderResponseMapper::toDto)

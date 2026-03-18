@@ -1,6 +1,5 @@
 package com.ecommerce.ordering.domain;
 
-import com.ecommerce.app.product.domain.ProductId;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

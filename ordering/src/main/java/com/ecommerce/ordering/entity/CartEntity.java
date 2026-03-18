@@ -1,6 +1,5 @@
 package com.ecommerce.ordering.entity;
 
-import com.ecommerce.app.user.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,9 +22,8 @@ public class CartEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", unique = true)
-    private UserEntity user;
+    @Column(name = "user_id", unique = true, nullable = false)
+    private UUID userId;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default

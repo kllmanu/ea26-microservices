@@ -1,7 +1,6 @@
 package com.ecommerce.ordering.repository;
 
 import com.ecommerce.ordering.entity.CartEntity;
-import com.ecommerce.app.user.entity.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,11 +17,6 @@ public class CartRepositoryImpl implements CartRepository {
     @Autowired
     public CartRepositoryImpl(JpaCartRepository jpaCartRepository) {
         this.jpaCartRepository = jpaCartRepository;
-    }
-
-    @Override
-    public Optional<CartEntity> findByUser(UserEntity user) {
-        return jpaCartRepository.findByUser(user);
     }
 
     @Override

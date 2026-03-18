@@ -2,8 +2,8 @@ package com.ecommerce.ordering.mapper;
 
 import com.ecommerce.ordering.domain.Cart;
 import com.ecommerce.ordering.domain.CartId;
+import com.ecommerce.ordering.domain.UserId;
 import com.ecommerce.ordering.entity.CartEntity;
-import com.ecommerce.app.user.domain.UserId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +20,7 @@ public class CartEntityMapper {
 
         return Cart.builder()
                 .id(CartId.of(entity.getId()))
-                .userId(entity.getUser() != null ? UserId.of(entity.getUser().getId()) : null)
+                .userId(entity.getUserId() != null ? UserId.of(entity.getUserId()) : null)
                 .items(entity.getItems() != null ? 
                         entity.getItems().stream()
                                 .map(cartItemEntityMapper::toDomain)

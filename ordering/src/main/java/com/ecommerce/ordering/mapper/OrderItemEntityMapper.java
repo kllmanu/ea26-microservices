@@ -2,8 +2,8 @@ package com.ecommerce.ordering.mapper;
 
 import com.ecommerce.ordering.domain.OrderItem;
 import com.ecommerce.ordering.domain.OrderItemId;
+import com.ecommerce.ordering.domain.ProductId;
 import com.ecommerce.ordering.entity.OrderItemEntity;
-import com.ecommerce.app.product.domain.ProductId;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -1,8 +1,13 @@
 package com.ecommerce.ordering.service;
 
+import com.ecommerce.ordering.client.ProductClient;
+import com.ecommerce.ordering.client.UserClient;
 import com.ecommerce.ordering.domain.Cart;
+import com.ecommerce.ordering.domain.ProductId;
 import com.ecommerce.ordering.dto.AddToCartRequestDto;
 import com.ecommerce.ordering.dto.CartResponseDto;
+import com.ecommerce.ordering.dto.ProductDTO;
+import com.ecommerce.ordering.dto.UserDTO;
 import com.ecommerce.ordering.entity.CartEntity;
 import com.ecommerce.ordering.entity.CartItemEntity;
 import com.ecommerce.ordering.exception.CartNotFoundException;
@@ -11,16 +16,6 @@ import com.ecommerce.ordering.mapper.CartEntityMapper;
 import com.ecommerce.ordering.mapper.CartItemEntityMapper;
 import com.ecommerce.ordering.mapper.CartResponseMapper;
 import com.ecommerce.ordering.repository.CartRepository;
-import com.ecommerce.app.product.domain.ProductId;
-import com.ecommerce.app.product.domain.Product;
-import com.ecommerce.app.product.entity.ProductEntity;
-import com.ecommerce.app.product.exception.ProductNotFoundException;
-import com.ecommerce.app.product.mapper.ProductEntityMapper;
-import com.ecommerce.app.product.repository.ProductRepository;
-import com.ecommerce.app.product.service.ProductService;
-import com.ecommerce.app.user.entity.UserEntity;
-import com.ecommerce.app.user.exception.UserNotFoundException;
-import com.ecommerce.app.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,13 +31,10 @@ public class CartServiceImpl implements CartService {
     private CartRepository cartRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserClient userClient;
 
     @Autowired
-    private ProductRepository productRepository;
-
-    @Autowired
-    private ProductService productService;
+    private ProductClient productClient;
 
     @Autowired
     private CartEntityMapper cartEntityMapper;
@@ -51,15 +43,14 @@ public class CartServiceImpl implements CartService {
     private CartItemEntityMapper cartItemEntityMapper;
 
     @Autowired
-    private ProductEntityMapper productEntityMapper;
-
-    @Autowired
     private CartResponseMapper cartResponseMapper;
 
     @Transactional
     public CartResponseDto getCartByUserId(UUID userId) {
-        if (!userRepository.existsById(userId)) {
-            throw new UserNotFoundException(userId);
+        // Validate user via Feign
+        UserDTO user = userClient.getUserById(userId);
+        if (user == null) {
+            throw new RuntimeException("User not found: " + userId);
         }
         CartEntity cartEntity = getOrCreateCart(userId);
         return cartResponseMapper.toDto(cartEntityMapper.toDomain(cartEntity));
@@ -74,21 +65,22 @@ public class CartServiceImpl implements CartService {
 
     @Transactional
     public CartResponseDto addItemToCart(UUID userId, AddToCartRequestDto request) {
-        ProductId productId = ProductId.of(request.getProductId());
-        
-        productService.checkAvailability(productId);
-        productService.checkStock(productId, request.getQuantity());
+        // Fetch product info via Feign
+        ProductDTO product = productClient.getProductById(request.getProductId());
+        if (product == null || !product.getAvailable()) {
+            throw new RuntimeException("Product not available: " + request.getProductId());
+        }
+        if (product.getStock() < request.getQuantity()) {
+            throw new RuntimeException("Insufficient stock for product: " + request.getProductId());
+        }
 
         CartEntity cartEntity = getOrCreateCart(userId);
         Cart cartDomain = cartEntityMapper.toDomain(cartEntity);
 
-        ProductEntity productEntity = productRepository.findById(request.getProductId())
-                .orElseThrow(() -> new ProductNotFoundException(request.getProductId()));
-
         cartDomain.addOrUpdateItem(
-                ProductId.of(productEntity.getId()),
-                productEntity.getName(),
-                productEntity.getPrice(),
+                ProductId.of(product.getId()),
+                product.getName(),
+                product.getPrice(),
                 request.getQuantity()
         );
 
@@ -101,9 +93,7 @@ public class CartServiceImpl implements CartService {
 
     @Transactional
     public CartResponseDto removeItemFromCart(UUID userId, UUID productId) {
-        if (!userRepository.existsById(userId)) {
-            throw new UserNotFoundException(userId);
-        }
+        // Validate user via Feign if needed
         
         CartEntity cartEntity = cartRepository.findByUserId(userId)
                 .orElseThrow(() -> new CartNotFoundException(userId));
@@ -126,10 +116,6 @@ public class CartServiceImpl implements CartService {
 
     @Transactional
     public void clearCart(UUID userId) {
-        if (!userRepository.existsById(userId)) {
-            throw new UserNotFoundException(userId);
-        }
-        
         CartEntity cartEntity = cartRepository.findByUserId(userId)
                 .orElseThrow(() -> new CartNotFoundException(userId));
         
@@ -164,10 +150,13 @@ public class CartServiceImpl implements CartService {
     private CartEntity getOrCreateCart(UUID userId) {
         return cartRepository.findByUserId(userId)
                 .orElseGet(() -> {
-                    UserEntity user = userRepository.findById(userId)
-                            .orElseThrow(() -> new UserNotFoundException(userId));
+                    // Validate user existence via Feign before creating cart
+                    UserDTO user = userClient.getUserById(userId);
+                    if (user == null) {
+                        throw new RuntimeException("User not found: " + userId);
+                    }
                     CartEntity newCart = CartEntity.builder()
-                            .user(user)
+                            .userId(userId)
                             .build();
                     return cartRepository.save(newCart);
                 });

@@ -31,10 +31,19 @@ services:
       - "traefik.http.routers.product.middlewares=product-strip"
       - "traefik.http.services.product.loadbalancer.server.port=8082"
 
+  ordering:
+    build: ordering
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ordering.rule=Host(`localhost`) && PathPrefix(`/ordering`)"
+      - "traefik.http.middlewares.ordering-strip.stripprefix.prefixes=/ordering"
+      - "traefik.http.routers.ordering.middlewares=ordering-strip"
+      - "traefik.http.services.ordering.loadbalancer.server.port=8083"
+
   swagger:
     image: swaggerapi/swagger-ui:latest
     environment:
-      - 'URLS=[{ "url": "http://localhost/user/v3/api-docs", "name": "User Service" }, { "url": "http://localhost/product/v3/api-docs", "name": "Product Service" }]'
+      - 'URLS=[{ "url": "http://localhost/user/v3/api-docs", "name": "User Service" }, { "url": "http://localhost/product/v3/api-docs", "name": "Product Service" }, { "url": "http://localhost/ordering/v3/api-docs", "name": "Ordering Service" }]'
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.swagger.rule=Host(`localhost`) && PathPrefix(`/swagger`)"
