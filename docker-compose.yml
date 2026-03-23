@@ -40,6 +40,15 @@ services:
       - "traefik.http.routers.ordering.middlewares=ordering-strip"
       - "traefik.http.services.ordering.loadbalancer.server.port=8083"
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+
   swagger:
     image: swaggerapi/swagger-ui:latest
     environment:

@@ -15,12 +15,14 @@ import com.ecommerce.ordering.entity.OrderItemEntity;
 import com.ecommerce.ordering.exception.CartNotFoundException;
 import com.ecommerce.ordering.exception.EmptyCartException;
 import com.ecommerce.ordering.exception.OrderNotFoundException;
+import com.ecommerce.ordering.event.OrderPlacedEvent;
 import com.ecommerce.ordering.mapper.OrderEntityMapper;
 import com.ecommerce.ordering.mapper.OrderItemEntityMapper;
 import com.ecommerce.ordering.mapper.OrderResponseMapper;
 import com.ecommerce.ordering.repository.CartRepository;
 import com.ecommerce.ordering.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,6 +53,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private OrderItemEntityMapper orderItemEntityMapper;
+
+    @Autowired
+    private StreamBridge streamBridge;
 
     @Transactional
     public OrderResponseDto placeOrder(UUID userId) {
@@ -112,6 +117,19 @@ public class OrderServiceImpl implements OrderService {
         // Clear Cart
         cart.getItems().clear();
         cartRepository.save(cart);
+
+        // Send Async Event to reduce stock
+        OrderPlacedEvent event = OrderPlacedEvent.builder()
+                .orderId(savedOrder.getId())
+                .userId(userId)
+                .items(savedOrder.getItems().stream()
+                        .map(item -> OrderPlacedEvent.OrderItemEvent.builder()
+                                .productId(item.getProductId())
+                                .quantity(item.getQuantity())
+                                .build())
+                        .collect(Collectors.toList()))
+                .build();
+        streamBridge.send("orderPlaced-out-0", event);
 
         return orderResponseMapper.toDto(orderEntityMapper.toDomain(savedOrder));
     }
