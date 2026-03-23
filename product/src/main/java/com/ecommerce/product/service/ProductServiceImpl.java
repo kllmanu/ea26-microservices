@@ -115,4 +115,12 @@ public class ProductServiceImpl implements ProductService {
         entity.setStock(entity.getStock() - quantity);
         productRepository.save(entity);
     }
+
+    @Override
+    @org.springframework.transaction.annotation.Transactional
+    public void processOrder(com.ecommerce.product.event.OrderPlacedEvent event) {
+        event.getItems().forEach(item -> {
+            reduceStock(ProductId.of(item.getProductId()), item.getQuantity());
+        });
+    }
 }

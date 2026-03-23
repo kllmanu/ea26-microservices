@@ -18,4 +18,5 @@ public interface ProductService {
     void checkAvailability(ProductId id);
     void checkStock(ProductId id, Integer requestedQuantity);
     void reduceStock(ProductId id, Integer quantity);
+    void processOrder(com.ecommerce.product.event.OrderPlacedEvent event);
 }

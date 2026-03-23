@@ -10,4 +10,6 @@ public interface OrderService {
     List<OrderResponseDto> getOrderHistory(UUID userId);
     List<OrderResponseDto> getAllOrders();
     OrderResponseDto getOrderById(UUID orderId);
+    void confirmOrder(UUID orderId);
+    void cancelOrder(UUID orderId);
 }

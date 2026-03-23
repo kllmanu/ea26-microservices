@@ -12,6 +12,10 @@ import com.ecommerce.product.service.ProductService;
 
 import lombok.extern.slf4j.Slf4j;
 
+import com.ecommerce.product.event.StockReservationFailedEvent;
+import com.ecommerce.product.event.StockReservedEvent;
+import org.springframework.cloud.stream.function.StreamBridge;
+
 @Configuration
 @Slf4j
 public class OrderPlacedConsumer {
@@ -19,18 +23,26 @@ public class OrderPlacedConsumer {
     @Autowired
     private ProductService productService;
 
+    @Autowired
+    private StreamBridge streamBridge;
+
     @Bean
     public Consumer<OrderPlacedEvent> reduceStock() {
         return event -> {
             log.info("Received OrderPlacedEvent for order: {}", event.getOrderId());
-            event.getItems().forEach(item -> {
-                log.info("Reducing stock for product: {} by quantity: {}", item.getProductId(), item.getQuantity());
-                try {
-                    productService.reduceStock(ProductId.of(item.getProductId()), item.getQuantity());
-                } catch (Exception e) {
-                    log.error("Failed to reduce stock for product: {}. Error: {}", item.getProductId(), e.getMessage());
-                }
-            });
+            try {
+                productService.processOrder(event);
+                log.info("Stock reserved successfully for order: {}", event.getOrderId());
+                streamBridge.send("stockReserved-out-0", StockReservedEvent.builder()
+                        .orderId(event.getOrderId())
+                        .build());
+            } catch (Exception e) {
+                log.error("Failed to reserve stock for order: {}. Error: {}", event.getOrderId(), e.getMessage());
+                streamBridge.send("stockReservationFailed-out-0", StockReservationFailedEvent.builder()
+                        .orderId(event.getOrderId())
+                        .reason(e.getMessage())
+                        .build());
+            }
         };
     }
 }

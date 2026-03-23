@@ -72,17 +72,6 @@ public class OrderServiceImpl implements OrderService {
             throw new EmptyCartException(userId);
         }
 
-        // Check availability and stock for all items via Feign
-        cart.getItems().forEach(item -> {
-            ProductDTO product = productClient.getProductById(item.getProductId());
-            if (product == null || !product.getAvailable()) {
-                throw new RuntimeException("Product not available: " + item.getProductId());
-            }
-            if (product.getStock() < item.getQuantity()) {
-                throw new RuntimeException("Insufficient stock for product: " + item.getProductId());
-            }
-        });
-
         // Create Order items from Cart items
         List<OrderItem> orderItems = cart.getItems().stream()
                 .map(item -> new OrderItem(
@@ -94,13 +83,13 @@ public class OrderServiceImpl implements OrderService {
                 ))
                 .collect(Collectors.toList());
 
-        // Create and Save Order
+        // Create and Save Order with PENDING status
         Order orderDomain = Order.create(UserId.of(userId), orderItems);
         OrderEntity orderEntity = OrderEntity.builder()
                 .userId(userId)
                 .totalAmount(orderDomain.getTotalAmount())
                 .orderDate(orderDomain.getOrderDate())
-                .status(orderDomain.getStatus())
+                .status(OrderEntity.OrderStatus.PENDING) // Explicitly set to PENDING
                 .build();
 
         List<OrderItemEntity> itemEntities = orderItems.stream()
@@ -118,7 +107,7 @@ public class OrderServiceImpl implements OrderService {
         cart.getItems().clear();
         cartRepository.save(cart);
 
-        // Send Async Event to reduce stock
+        // Send Async Event to reduce stock (this starts the saga)
         OrderPlacedEvent event = OrderPlacedEvent.builder()
                 .orderId(savedOrder.getId())
                 .userId(userId)
@@ -132,6 +121,22 @@ public class OrderServiceImpl implements OrderService {
         streamBridge.send("orderPlaced-out-0", event);
 
         return orderResponseMapper.toDto(orderEntityMapper.toDomain(savedOrder));
+    }
+
+    @Transactional
+    public void confirmOrder(UUID orderId) {
+        OrderEntity order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException(orderId));
+        order.setStatus(OrderEntity.OrderStatus.COMPLETED);
+        orderRepository.save(order);
+    }
+
+    @Transactional
+    public void cancelOrder(UUID orderId) {
+        OrderEntity order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException(orderId));
+        order.setStatus(OrderEntity.OrderStatus.CANCELLED);
+        orderRepository.save(order);
     }
 
     public List<OrderResponseDto> getOrderHistory(UUID userId) {
