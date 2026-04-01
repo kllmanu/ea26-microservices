@@ -19,11 +19,15 @@ Run `./seed_data.sh` to seed the data (requires `jq`) to be installed.
 
 ## Exercise 3
 
-- Asynchronous communication using Spring Cloud Stream and RabbitMQ.
-- Implemented a saga for order placement using choreography with events:
-
-  1. `Ordering Service` places a `PENDING` order and emits `OrderPlacedEvent`.
-  2. `Product Service` consumes `OrderPlacedEvent`, reserves stock atomically, and emits `StockReservedEvent` (success) or `StockReservationFailedEvent` (failure).
-  3. `Ordering Service` consumes these events and updates the order status to `COMPLETED` or `CANCELLED`.
+- Spring Cloud Stream with RabbitMQ
+- Saga (Choreography)
 
 Run `./seed_reservation_failure.sh` to test the insufficient stock use case.
+
+## Exercise 4
+
+- [Hive Gateway](https://the-guild.dev/graphql/hive/docs/gateway) for GraphQL
+- [Hive Mesh](https://the-guild.dev/graphql/mesh/v1/source-handlers/openapi)
+- Traeffik is still in use for service discovery :)
+
+Graphql Playground: http://localhost/hive/graphql

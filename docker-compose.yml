@@ -5,7 +5,7 @@ services:
       - "--api.insecure=true" # Enables the Traefik Dashboard
       - "--providers.docker=true" # Enables Service Discovery
     ports:
-      - "80:80"     # Public Traffic
+      - "80:80" # Public Traffic
       - "8080:8080" # The Traefik Dashboard UI
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
@@ -59,3 +59,20 @@ services:
       - "traefik.http.middlewares.swagger-strip.stripprefix.prefixes=/swagger"
       - "traefik.http.routers.swagger.middlewares=swagger-strip"
       - "traefik.http.services.swagger.loadbalancer.server.port=8080"
+
+  hive-gateway:
+    build: ./gateway
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./gateway/mesh.config.ts:/gateway-build/mesh.config.ts
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.gateway.rule=Host(`localhost`) && PathPrefix(`/hive`)"
+      - "traefik.http.middlewares.gateway-strip.stripprefix.prefixes=/hive"
+      - "traefik.http.routers.gateway.middlewares=gateway-strip"
+      - "traefik.http.services.gateway.loadbalancer.server.port=4000"
+    depends_on:
+      - user
+      - product
+      - ordering

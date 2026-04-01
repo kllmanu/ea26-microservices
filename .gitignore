@@ -1,1 +1,3 @@
 *.zip
+.mesh/
+.hive-gateway/
