@@ -2,6 +2,7 @@ package com.ecommerce.ordering.controller;
 
 import com.ecommerce.ordering.dto.OrderResponseDto;
 import com.ecommerce.ordering.service.OrderService;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +20,15 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
+    @Autowired
+    private MeterRegistry meterRegistry;
+
     @PostMapping("/user/{userId}")
     @Operation(summary = "Place an order", description = "Creates a new order from the user's current shopping cart")
     public ResponseEntity<OrderResponseDto> placeOrder(@PathVariable UUID userId) {
-        return ResponseEntity.ok(orderService.placeOrder(userId));
+        OrderResponseDto order = orderService.placeOrder(userId);
+        meterRegistry.counter("order.placed.count").increment();
+        return ResponseEntity.ok(order);
     }
 
     @GetMapping

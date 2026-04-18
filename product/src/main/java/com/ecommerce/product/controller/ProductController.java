@@ -4,6 +4,7 @@ import com.ecommerce.product.dto.ProductCreateRequestDto;
 import com.ecommerce.product.dto.ProductResponseDto;
 import com.ecommerce.product.dto.ProductUpdateRequestDto;
 import com.ecommerce.product.service.ProductService;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,9 @@ public class ProductController {
 
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private MeterRegistry meterRegistry;
 
     @GetMapping
     @Operation(summary = "Get all products", description = "Returns a list of all products")
@@ -40,6 +44,7 @@ public class ProductController {
     @Operation(summary = "Create a new product", description = "Creates a new product with the provided details")
     public ResponseEntity<ProductResponseDto> createProduct(@RequestBody ProductCreateRequestDto productDto) {
         ProductResponseDto createdProduct = productService.createProduct(productDto);
+        meterRegistry.counter("product.created.count").increment();
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
     }
 
